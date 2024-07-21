@@ -1,64 +1,70 @@
 import java.util.Scanner;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
-public class UserInputValidation {
+public class LoginSystem {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Validate Username
-        String username = "";
-        while (true) {
-            System.out.print("Enter Username: ");
-            username = scanner.nextLine();
-            if (username.isEmpty()) {
-                System.out.println("Username should not be empty.");
-            } else if (username.length() > 50) {
-                System.out.println("Username should not exceed 50 characters.");
-            } else {
-                break;
-            }
-        }
+        System.out.println("Enter your username:");
+        String username = scanner.nextLine();
 
-        // Validate Password
-        String password = "";
-        while (true) {
-            System.out.print("Enter Password: ");
-            password = scanner.nextLine();
-            if (password.length() < 8) {
-                System.out.println("Password must be at least 8 characters long.");
-            } else if (!password.matches(".*[!@#$%^&*()].*")) {
-                System.out.println("Password must contain at least one special symbol.");
-            } else if (!password.matches(".*[0-9].*")) {
-                System.out.println("Password must contain at least one number.");
-            } else if (!password.matches(".*[a-z].*") || !password.matches(".*[A-Z].*")) {
-                System.out.println("Password must contain both uppercase and lowercase characters.");
-            } else {
-                break;
-            }
-        }
+        System.out.println("Enter your password:");
+        String password = scanner.nextLine();
 
-        // Validate Email
-        String email = "";
-        while (true) {
-            System.out.print("Enter Email: ");
-            email = scanner.nextLine();
-            if (!isValidEmail(email)) {
-                System.out.println("Email is not valid.");
-            } else {
-                break;
-            }
-        }
+        System.out.println("Enter your email address:");
+        String email = scanner.nextLine();
 
-        System.out.println("All inputs are valid!");
+        boolean isUsernameValid = isValidUsername(username);
+        boolean isPasswordValid = isValidPassword(password);
+        boolean isEmailValid = isValidEmail(email);
+
+        System.out.println("Username is " + (isUsernameValid ? "valid." : "invalid."));
+        System.out.println("Password is " + (isPasswordValid ? "valid." : "invalid."));
+        System.out.println("Email is " + (isEmailValid ? "valid." : "invalid."));
+
         scanner.close();
     }
 
-    public static boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z]+$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
+    private static boolean isValidUsername(String username) {
+        return username != null && !username.isEmpty() && username.length() <= 50;
+    }
+
+    private static boolean isValidPassword(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        boolean hasSpecial = false;
+        boolean hasNumber = false;
+        boolean hasUpper = false;
+        boolean hasLower = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isDigit(c)) {
+                hasNumber = true;
+            } else if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLower = true;
+            } else if (!Character.isLetterOrDigit(c)) {
+                hasSpecial = true;
+            }
+        }
+        return hasSpecial && hasNumber && hasUpper && hasLower;
+    }
+
+    private static boolean isValidEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+        String[] parts = email.split("@");
+        if (parts.length != 2) {
+            return false;
+        }
+        String local = parts[0];
+        String domain = parts[1];
+        if (!local.matches("[a-zA-Z0-9]+") || !domain.matches("[a-zA-Z0-9]+\\.[a-zA-Z]+")) {
+            return false;
+        }
+        return true;
     }
 }
-
